@@ -223,21 +223,46 @@ library SafeMath {
     }
 }
 
-contract challenge2 is Ownable, Pausable {
-   
-   using SafeMath for uint256;
-   
-   uint256 public counter = 0;  
+library Counters {
+    using SafeMath for uint256;
 
-   function increamentCounter() onlyOwner whenNotPaused external {
-       counter = counter.add(1);
-   }
-   
-   function decreamentCounter() onlyOwner whenNotPaused external {
-       counter = counter.sub(1);
-   }
-   
-   function resetCounter() onlyOwner whenNotPaused external {
-       counter = 0;
-   }
+    struct Counter {
+        // This variable should never be directly accessed by users of the library: interactions must be restricted to
+        // the library's function. As of Solidity v0.5.2, this cannot be enforced, though there is a proposal to add
+        // this feature: see https://github.com/ethereum/solidity/issues/4637
+        uint256 _value; // default: 0
+    }
+
+    function current(Counter storage counter) internal view returns (uint256) {
+        return counter._value;
+    }
+
+    function increment(Counter storage counter) internal {
+        // The {SafeMath} overflow check can be skipped here, see the comment at the top
+        counter._value += 1;
+    }
+
+    function decrement(Counter storage counter) internal {
+        counter._value = counter._value.sub(1);
+    }
+}
+
+contract challenge2 is Ownable, Pausable {
+
+    using Counters for Counters.Counter;
+
+    Counters.Counter private _counter;
+
+    function current() public view returns (uint256) {
+        return _counter.current();
+    }
+
+    function increment() public {
+        _counter.increment();
+    }
+
+    function decrement() public {
+        _counter.decrement();
+    }
+
 }
